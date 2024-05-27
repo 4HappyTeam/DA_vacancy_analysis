@@ -2,7 +2,6 @@ import requests
 import fake_useragent
 from bs4 import BeautifulSoup
 import time
-import json
 
 
 def get_links(world='дата', area=113):
@@ -39,7 +38,6 @@ def get_links(world='дата', area=113):
         return
 
     links_lst = list()
-    # links_dic = dict()
     for page in range(page_count):
         # print(f'Обрабатывается слово = {world}, страница = {page}')
         try:
@@ -47,7 +45,6 @@ def get_links(world='дата', area=113):
             if response.status_code != 200:
                 continue
             soup = BeautifulSoup(response.content, 'lxml')
-            # for a in soup.find_all('a', class_='bloko-link'):
             tmp_link_list = []
             for a_tag in soup.findAll("a"):
                 href = a_tag.attrs.get("href")
@@ -61,10 +58,6 @@ def get_links(world='дата', area=113):
             print(f"{err}")
         time.sleep(1)
     return links_lst
-    # print(links_lst)
-    # print(links_dic)
-    # print(f'Список {world} = {len(links_lst)}')
-    # print(f'Словарь {world} = {len(links_dic)}')
 
 
 if __name__ == "__main__":
