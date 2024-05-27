@@ -7,6 +7,8 @@ import json
 
 def get_links(text):
     ua = fake_useragent.UserAgent()
+
+    # Получение количества страниц
     response = requests.get(
         url=f'https://hh.ru/search/vacancy?text={text}&area=1&page=1',
         headers={"user-agent": ua.random}
@@ -15,12 +17,19 @@ def get_links(text):
         return
     soup = BeautifulSoup(response.content, 'lxml')
     try:
+        # page_count: int = (
+        #     int(soup.find('div', attrs={'class': 'pager'})
+        #         .find_all('span', recursive=False)[-1]
+        #         .find("a")
+        #         .find("span").text)
+        # )
         page_count: int = (
-            int(soup.find('div', attrs={'class': 'pager'})
+            int(soup.find('div', class_='pager')
                 .find_all('span', recursive=False)[-1]
                 .find("a")
                 .find("span").text)
         )
+        print(f'Количество страниц cо списками вакансий = {page_count}')
     except:
         return
 
