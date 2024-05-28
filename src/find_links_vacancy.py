@@ -41,7 +41,7 @@ def get_links(world='kosmos', area=113) -> list:
                 .find("a")
                 .find("span").text)
         )
-        print(f'Количество страниц cо списками вакансий для поскового слова {world} = {page_count}')
+        print(f'Количество страниц cо списками вакансий для поискового слова {world} = {page_count}')
     except Exception as err:
         print(f'Ошибка={err}')
         return []
@@ -66,6 +66,7 @@ def get_links(world='kosmos', area=113) -> list:
         except Exception as err:
             print(f"Ошибка={err}")
         time.sleep(2)
+        # break
     return links_lst
 
 
