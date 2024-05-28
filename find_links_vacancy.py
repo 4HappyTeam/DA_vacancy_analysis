@@ -4,7 +4,14 @@ from bs4 import BeautifulSoup
 import time
 
 
-def get_links(world='дата', area=113):
+def get_links(world='kosmos', area=113) -> list:
+    """
+    Функция поиска ссылок на вакасии по поисковому слову.
+    Поиск происходит по вхождению слова в названии вакансии и(или) в описании вакансии.
+    :param world: string (слово для поиска)
+    :param area: int (регион: Россия - 113, Москва - 1, Санкт-Петербург - 2)
+    :return: list (список ссылок на вакансии)
+    """
     ua = fake_useragent.UserAgent()
     url_str = (f'https://hh.ru/search/vacancy?'
                f'L_save_area=true'
@@ -24,7 +31,8 @@ def get_links(world='дата', area=113):
     # Получение количества страниц
     response = requests.get(url=f'{url_str}&page=0', headers={"user-agent": ua.random})
     if response.status_code != 200:
-        return
+        print(f'Ошибка входа на 0 страницу. Ответ сервера={response.status_code}')
+        return []
     soup = BeautifulSoup(response.content, 'lxml')
     try:
         page_count: int = (
@@ -33,9 +41,10 @@ def get_links(world='дата', area=113):
                 .find("a")
                 .find("span").text)
         )
-        print(f'Количество страниц cо списками вакансий = {page_count}')
-    except:
-        return
+        print(f'Количество страниц cо списками вакансий для поскового слова {world} = {page_count}')
+    except Exception as err:
+        print(f'Ошибка={err}')
+        return []
 
     links_lst = list()
     for page in range(page_count):
@@ -55,17 +64,21 @@ def get_links(world='дата', area=113):
             print(f'Обработана страница = {page} найдено {len(tmp_link_list)} ссылок на вакансии по запросу = {world}')
             links_lst += tmp_link_list
         except Exception as err:
-            print(f"{err}")
-        time.sleep(1)
+            print(f"Ошибка={err}")
+        time.sleep(2)
     return links_lst
 
 
 if __name__ == "__main__":
     area = 113  # Россия - 113, Москва - 1, Санкт-Петербург - 2
     # worlds_find_lst = ['Продакт', 'дата', 'маркетинг', 'BI', 'Аналитик']
-    # worlds_find_lst = ['Продакт', 'продакт', 'ПРОДАКТ']  # Проверка на чувствительность к регистру
-    worlds_find_lst = ['BI']
+    worlds_find_lst = ['Chef', 'kosmos']
+    # worlds_find_lst = ['Продакт']
+    links_vacancy_lst = []  # Общий список ссылок на вакансии
     for world in worlds_find_lst:
-        links_vacancy_lst = get_links(world, area)
-        print(links_vacancy_lst)
-        print(f'Список {world} = {len(links_vacancy_lst)}')
+        world_vacancy_lst = get_links(world, area)
+        links_vacancy_lst += world_vacancy_lst
+        print(world_vacancy_lst)
+        print(f'Список {world} = {len(world_vacancy_lst)}')
+
+    print(f'Общий список по поисковым словам {worlds_find_lst} = {len(links_vacancy_lst)}')
