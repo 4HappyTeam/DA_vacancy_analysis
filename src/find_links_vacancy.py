@@ -17,12 +17,12 @@ def get_links(world='kosmos', area=113) -> list:
                f'L_save_area=true'
                f'&search_field=name'
                f'&search_field=description'
-               f'&excluded_text='
+               f'&excluded_text=учитель%2Cрекрутер%2Cрежиссер%2Cкрупье%2Cсмотритель'
                f'&items_on_page=20'
                f'&text={world}'
                f'&salary='
                f'&ored_clusters=true'
-               f'hhtmFrom=vacancy_search_filter'
+               f'&hhtmFrom=vacancy_search_filter'
                f'&area={area}'
                f'&enable_snippets=false'
                f'&experience=doesNotMatter'
@@ -61,7 +61,8 @@ def get_links(world='kosmos', area=113) -> list:
                     continue  # пустой тег href
                 if '.ru/vacancy/' in href:
                     tmp_link_list.append(href.split("?")[0])
-            print(f'Обработана страница = {page} найдено {len(tmp_link_list)} ссылок на вакансии по запросу = {world}')
+            print(f'Обработана страница = {page} из {page_count}, '
+                  f'найдено {len(tmp_link_list)} ссылок на вакансии по запросу = {world}')
             links_lst += tmp_link_list
         except Exception as err:
             print(f"Ошибка={err}")

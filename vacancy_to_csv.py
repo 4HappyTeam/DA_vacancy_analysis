@@ -1,3 +1,4 @@
+import time
 import requests
 import fake_useragent
 from bs4 import BeautifulSoup
@@ -83,12 +84,19 @@ def run(worlds_find_lst: list[str], area=113):
                'description']
     df = pd.DataFrame(columns=columns)
     cnt = 0
+    delay = 0  # Задержка при ошибках до следующего запроса (увеличивается при ошибках)
     # while cnt < 7:
     while cnt < len(links_vacancy_lst):
-        print(f'Обрабатывается вакансия {cnt} из {len(links_vacancy_lst)}')
+        print(f'Обрабатывается вакансия {cnt+1} из {len(links_vacancy_lst)}')
         vacancy_dic = get_vacancy(links_vacancy_lst[cnt])
-        df = pd.concat([df, pd.DataFrame([vacancy_dic])], ignore_index=True)
-        cnt += 1
+        if vacancy_dic['employer'] != "":
+            df = pd.concat([df, pd.DataFrame([vacancy_dic])], ignore_index=True)
+            delay = 0  # Обнуляем задержку т.к. нет ошибки
+            cnt += 1
+        else:
+            delay += 10  # Увеличиваем задержку т.к. появилась ошибка
+            time.sleep(delay)
+        time.sleep(1)
 
     # print(df.to_string(max_rows=7, max_cols=10))
     df.to_csv('vacancy.csv', sep=';')  # index=False,
