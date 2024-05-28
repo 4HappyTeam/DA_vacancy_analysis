@@ -61,7 +61,7 @@ def get_links(world='kosmos', area=113) -> list:
                     continue  # пустой тег href
                 if '.ru/vacancy/' in href:
                     tmp_link_list.append(href.split("?")[0])
-            print(f'Обработана страница = {page} из {page_count}, '
+            print(f'Обработана страница = {page + 1} из {page_count}, '
                   f'найдено {len(tmp_link_list)} ссылок на вакансии по запросу = {world}')
             links_lst += tmp_link_list
         except Exception as err:

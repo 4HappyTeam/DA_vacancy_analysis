@@ -69,9 +69,9 @@ def get_vacancy(link: str) -> dict:
     return vacancy_dic
 
 
-def run(worlds_find_lst: list[str], area=113):
+def main(worlds_find_lst: list[str], area=113):
     """
-    Функция администратор
+    Функция создает csv файл с вакансиями
     :param worlds_find_lst: list (слова для поиска: задаются в set_find_world.py)
     :param area: int (регион: задается в set_find_world.py)
     """
@@ -96,11 +96,11 @@ def run(worlds_find_lst: list[str], area=113):
         else:
             delay += 10  # Увеличиваем задержку т.к. появилась ошибка
             time.sleep(delay)
-        time.sleep(1)
+        time.sleep(1)  # Глобальная задержка
 
     # print(df.to_string(max_rows=7, max_cols=10))
     df.to_csv('vacancy.csv', sep=';')  # index=False,
 
 
 if __name__ == "__main__":
-    run(set.worlds_find_lst, set.area)
+    main(set.worlds_find_lst, set.area)
