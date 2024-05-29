@@ -24,15 +24,15 @@ def get_vacancy(link: str) -> dict:
         return vacancy_dic
     soup = BeautifulSoup(data.content, "lxml")
     try:
-        vacancy_dic['employer'] = soup.find(
+        vacancy_dic['name'] = soup.find(
             'h1', attrs={"data-qa": "vacancy-title", "class": "bloko-header-section-1"}
         ).text
     except:
-        vacancy_dic['employer'] = ""
-    try:
-        vacancy_dic['name'] = soup.find('span', attrs={"class": "vacancy-company-name"}).text
-    except:
         vacancy_dic['name'] = ""
+    try:
+        vacancy_dic['company'] = soup.find('span', attrs={"class": "vacancy-company-name"}).text
+    except:
+        vacancy_dic['company'] = ""
     try:
         vacancy_dic['salary'] = soup.find('span', attrs={"data-qa": "vacancy-salary-compensation-type-net"}).text
     except:
@@ -80,7 +80,7 @@ def main(worlds_find_lst: list[str], area=113):
         links_vacancy_lst += flv.get_links(world, area)  # Добавление списка
     print(f'Всего найдено вакансий {len(links_vacancy_lst)} по словам: {worlds_find_lst}')
 
-    columns = ['link', 'id', 'employer', 'name', 'salary', 'experience', 'schedule', 'schedule_dop', 'key',
+    columns = ['link', 'id', 'name', 'company', 'salary', 'experience', 'schedule', 'schedule_dop', 'key',
                'description']
     df = pd.DataFrame(columns=columns)
     cnt = 0
@@ -89,7 +89,7 @@ def main(worlds_find_lst: list[str], area=113):
     while cnt < len(links_vacancy_lst):
         print(f'Обрабатывается вакансия {cnt+1} из {len(links_vacancy_lst)}')
         vacancy_dic = get_vacancy(links_vacancy_lst[cnt])
-        if vacancy_dic['employer'] != "":
+        if vacancy_dic['name'] != "":
             df = pd.concat([df, pd.DataFrame([vacancy_dic])], ignore_index=True)
             delay = 0  # Обнуляем задержку т.к. нет ошибки
             cnt += 1

@@ -16,8 +16,8 @@ def get_links(world='kosmos', area=113) -> list:
     url_str = (f'https://hh.ru/search/vacancy?'
                f'L_save_area=true'
                f'&search_field=name'
-               f'&search_field=description'
-               f'&excluded_text=учитель%2Cрекрутер%2Cрежиссер%2Cкрупье%2Cсмотритель'
+               f'&search_field=description'  # Можно закомментировать, чтобы искать слова только в названии вакансии
+               f'&excluded_text=учитель%2Cрекрутер%2Cрежиссер%2Cкрупье%2Cсмотритель%2Cврач%2Cкладовщик'
                f'&items_on_page=20'
                f'&text={world}'
                f'&salary='
