@@ -5,13 +5,13 @@ import time
 import re
 
 
-def get_links(world: str, area: int, professional_role: list, find_description: bool) -> list:
+def get_links(word: str, area: int, professional_role: list, find_description: bool) -> list:
     """
     Функция поиска ссылок на вакасии по поисковому слову.
     Поиск происходит по вхождению слова в названии вакансии и(или) в описании вакансии.
     :param professional_role: list (список профессиональных ролей)
     :param find_description: bool (Поиск по полю описания)
-    :param world: string (слово для поиска)
+    :param word: string (слово для поиска)
     :param area: int (регион: Россия - 113, Москва - 1, Санкт-Петербург - 2)
     :return: links_lst: set (множество ссылок на вакансии)
     """
@@ -22,7 +22,7 @@ def get_links(world: str, area: int, professional_role: list, find_description: 
                # f'&search_field=description'  # Можно закомментировать, чтобы искать слова только в названии вакансии
                # f'&excluded_text=учитель%2Cрекрутер%2Cрежиссер%2Cкрупье%2Cсмотритель%2Cврач%2Cкладовщик'
                f'&items_on_page=20'
-               f'&text={world}'
+               f'&text={word}'
                f'&salary='
                f'&ored_clusters=true'
                f'&hhtmFrom=vacancy_search_filter'
@@ -58,10 +58,10 @@ def get_links(world: str, area: int, professional_role: list, find_description: 
                 .find("a")
                 .find("span").text)
         )
-        print(f'Количество страниц cо списками вакансий для поискового слова {world} = {page_count}')
+        print(f'Количество страниц cо списками вакансий для поискового слова {word} = {page_count}')
     except Exception as err:
         print(f'Ошибка={err}')
-        print(f'Поиск {world}. Ничего не найдено. Попробуйте изменить поисковый запрос.')
+        print(f'Поиск {word}. Ничего не найдено. Попробуйте изменить поисковый запрос.')
         return []
 
     links_lst = list()
@@ -84,7 +84,7 @@ def get_links(world: str, area: int, professional_role: list, find_description: 
                     # tmp_link_lst.add(href.split("?")[0])
                     tmp_link_lst.append(result)
             print(f'Обработана страница = {page + 1} из {page_count}, '
-                  f'найдено {len(tmp_link_lst)} ссылок на вакансии по запросу = {world}')
+                  f'найдено {len(tmp_link_lst)} ссылок на вакансии по запросу = {word}')
             if len(tmp_link_lst) != 0:
                 links_lst += tmp_link_lst  # Объединяем списки
                 delay = 0  # Обнуляем задержку т.к. нет ошибки
@@ -116,17 +116,17 @@ if __name__ == "__main__":
     area = 113  # Россия - 113, Москва - 1, Санкт-Петербург - 2
 
     # Слова для поиска
-    # worlds_find_lst = ['Продакт', 'дата', 'маркетинг', 'BI', 'Аналитик']
-    # worlds_find_lst = ['Chef', 'kosmos']
-    worlds_find_lst = ['дата', 'Продакт']
-    # worlds_find_lst = ['дата']
+    # words_find_lst = ['Продакт', 'дата', 'маркетинг', 'BI', 'Аналитик']
+    # words_find_lst = ['Chef', 'kosmos']
+    words_find_lst = ['дата', 'Продакт']
+    # words_find_lst = ['дата']
 
     links_vacancy_lst = list()  # Общий список ссылок на вакансии
-    for world in worlds_find_lst:
-        worlds_vacancy_lst: list = get_links(world, area, professional_role, find_description)
-        links_vacancy_lst += worlds_vacancy_lst
-        print(f'Список {world} = {len(worlds_vacancy_lst)}')
+    for word in words_find_lst:
+        words_vacancy_lst: list = get_links(word, area, professional_role, find_description)
+        links_vacancy_lst += words_vacancy_lst
+        print(f'Список {word} = {len(words_vacancy_lst)}')
 
     links_vacancy_lst = list(set(links_vacancy_lst))  # Оставляем только уникальные значения
-    print(f'Общий список по поисковым словам {worlds_find_lst} = {len(links_vacancy_lst)}')
+    print(f'Общий список по поисковым словам {words_find_lst} = {len(links_vacancy_lst)}')
     print(links_vacancy_lst)
