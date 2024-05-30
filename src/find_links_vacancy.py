@@ -21,7 +21,7 @@ def get_links(arg_dic: dict) -> list:
 
     # Получение количества страниц
     # url_str = f'{url_str}&page=1'
-    print(f'Получение количества страниц по запросу {arg_dic["text"]} по ссылке\n'
+    print(f'Получение количества страниц по запросу <{arg_dic["text"]}> по ссылке:\n'
           f'{url_str}')
     response = requests.get(url=url_str, headers={"user-agent": ua.random})
     if response.status_code != 200:
@@ -35,10 +35,10 @@ def get_links(arg_dic: dict) -> list:
                 .find("a")
                 .find("span").text)
         )
-        print(f'Количество страниц cо списками вакансий для поискового слова {arg_dic["text"]} = {page_count}')
+        print(f'Количество страниц cо списками вакансий для поискового слова <{arg_dic["text"]}> = {page_count}')
     except Exception as err:
         print(f'Ошибка={err}')
-        print(f'Поиск {arg_dic["text"]}. Ничего не найдено. Попробуйте изменить поисковый запрос.')
+        print(f'Поиск <{arg_dic["text"]}>. Ничего не найдено. Попробуйте изменить поисковый запрос.')
         return []
 
     links_lst = list()
@@ -61,7 +61,7 @@ def get_links(arg_dic: dict) -> list:
                     # tmp_link_lst.add(href.split("?")[0])
                     tmp_link_lst.append(result)
             print(f'Обработана страница = {page + 1} из {page_count}, '
-                  f'найдено {len(tmp_link_lst)} ссылок на вакансии по запросу = {arg_dic["text"]}')
+                  f'найдено {len(tmp_link_lst)} ссылок на вакансии по запросу <{arg_dic["text"]}>')
             if len(tmp_link_lst) != 0:
                 links_lst += tmp_link_lst  # Объединяем списки
                 delay = 0  # Обнуляем задержку т.к. нет ошибки

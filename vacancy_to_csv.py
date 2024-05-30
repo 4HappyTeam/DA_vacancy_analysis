@@ -6,7 +6,6 @@ import pandas as pd
 import json
 
 from src import find_links_vacancy as flv
-import set_find_word as setting
 
 
 def get_vacancy(link: str) -> dict:
@@ -67,12 +66,25 @@ def get_vacancy(link: str) -> dict:
         vacancy_dic['key'] = tmp_lst
     except:
         vacancy_dic['key'] = []
+    # try:
+    #     vacancy_dic['description'] = soup.find(
+    #         'div', attrs={"class": "vacancy-section"}
+    #     ).text.replace('\n', '').strip()
+    # except:
+    #     vacancy_dic['description'] = ""
+    # try:
+    #     vacancy_dic['description'] = soup.find(
+    #         'div', attrs={"class": "g-user-content", "data-qa": "vacancy-description"}
+    #     ).text.replace('\n', '').strip()
+    # except:
+    #     vacancy_dic['description'] = ""
     try:
         vacancy_dic['description'] = soup.find(
-            'div', attrs={"class": "vacancy-section"}
+            'div', attrs={"data-qa": "vacancy-description"}
         ).text.replace('\n', '').strip()
     except:
         vacancy_dic['description'] = ""
+
     return vacancy_dic
 
 
@@ -120,8 +132,8 @@ def main(arg_dic: dict):
 
 
 if __name__ == "__main__":
-    # main(setting.words_find_lst, setting.area, setting.professional_role, setting.find_description)
 
+    # file_path = r'settings_Аналитик_msk.json'  # Указываем путь к JSON файлу настроек
     file_path = r'settings.json'  # Указываем путь к JSON файлу настроек
 
     # Открываем файл и загружаем его содержимое в словарь

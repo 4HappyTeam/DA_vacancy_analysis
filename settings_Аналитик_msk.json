@@ -1,0 +1,13 @@
+{
+    "text": ["Аналитик"],
+    "search_field": ["name", "description"],
+    "excluded_text": "",
+    "professional_role": [10, 156, 150, 164, 163, 157, 134],
+    "area": [1],
+    "salary": "",
+    "experience": "doesNotMatter",
+    "order_by": "relevance",
+    "search_period": 0,
+    "items_on_page": 20,
+    "hhtmFrom": "vacancy_search_filter"
+}
