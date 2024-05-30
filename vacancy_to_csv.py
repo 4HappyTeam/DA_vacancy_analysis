@@ -5,7 +5,7 @@ from bs4 import BeautifulSoup
 import pandas as pd
 
 from src import find_links_vacancy as flv
-import set_find_world as set
+import set_find_world as setting
 
 
 def get_vacancy(link: str) -> dict:
@@ -69,21 +69,26 @@ def get_vacancy(link: str) -> dict:
     return vacancy_dic
 
 
-def main(worlds_find_lst: list[str], area=113):
+def main(worlds_find_lst: list[str], area: int, professional_role: list[int], find_description: bool):
     """
-    Функция создает csv файл с вакансиями
-    :param worlds_find_lst: list (слова для поиска: задаются в set_find_world.py)
-    :param area: int (регион: задается в set_find_world.py)
+    Функция создает csv файл с вакансиями. Имя файла собирается из параметров запроса поиска.
+    :param find_description: bool (включение/выключение для поиска поля описания, задается в set_find_world.py)
+    :param professional_role: list (список ролей, задается в set_find_world.py)
+    :param worlds_find_lst: list (слова для поиска, задаются в set_find_world.py)
+    :param area: int (регион, задается в set_find_world.py)
     """
-    links_vacancy_lst = []  # Общий список ссылок на вакансии
+    links_vacancy_lst = list()  # Общий список ссылок на вакансии
     for world in worlds_find_lst:  # Перебор поисковых слов
-        links_vacancy_lst += flv.get_links(world, area)  # Добавление списка
+        links_vacancy_lst += flv.get_links(world, area, professional_role, find_description)  # Добавление списка
     print(f'Всего найдено вакансий {len(links_vacancy_lst)} по словам: {worlds_find_lst}')
+    links_vacancy_lst = list(set(links_vacancy_lst))  # Оставляем только уникальные значения
+    print(f'Всего найдено вакансий после очистки от дубликатов {len(links_vacancy_lst)} по словам: {worlds_find_lst}')
 
+    # Задание колонок
     columns = ['link', 'id', 'name', 'company', 'salary', 'experience', 'schedule', 'schedule_dop', 'key',
                'description']
-    df = pd.DataFrame(columns=columns)
-    cnt = 0
+    df = pd.DataFrame(columns=columns)  # DF с вакансиями
+    cnt = 0  # Счетчик перебранных вакансий
     delay = 0  # Задержка при ошибках до следующего запроса (увеличивается при ошибках)
     # while cnt < 7:
     while cnt < len(links_vacancy_lst):
@@ -99,8 +104,17 @@ def main(worlds_find_lst: list[str], area=113):
         time.sleep(1)  # Глобальная задержка
 
     # print(df.to_string(max_rows=7, max_cols=10))
-    df.to_csv('vacancy.csv', sep=';')  # index=False,
+    # Сборка имени файла
+    file_name = f'{area}'
+    for world in worlds_find_lst:
+        file_name += f'_{world}'
+    if len(professional_role) != 0:
+        for i in professional_role:
+            file_name += f'_{i}'
+    if find_description:
+        file_name += f'_description'
+    df.to_csv(f'{file_name}.csv', sep=';')  # index=False,
 
 
 if __name__ == "__main__":
-    main(set.worlds_find_lst, set.area)
+    main(setting.worlds_find_lst, setting.area, setting.professional_role, setting.find_description)
