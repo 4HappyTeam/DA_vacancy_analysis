@@ -3,6 +3,7 @@ import requests
 import fake_useragent
 from bs4 import BeautifulSoup
 import pandas as pd
+import json
 
 from src import find_links_vacancy as flv
 import set_find_word as setting
@@ -23,6 +24,12 @@ def get_vacancy(link: str) -> dict:
     if data.status_code != 200:
         return vacancy_dic
     soup = BeautifulSoup(data.content, "lxml")
+    try:
+        vacancy_dic['date'] = soup.find(
+            'p', attrs={"class": "vacancy-creation-time-redesigned"}
+        ).text
+    except:
+        vacancy_dic['date'] = ""
     try:
         vacancy_dic['name'] = soup.find(
             'h1', attrs={"data-qa": "vacancy-title", "class": "bloko-header-section-1"}
@@ -69,23 +76,15 @@ def get_vacancy(link: str) -> dict:
     return vacancy_dic
 
 
-def main(words_find_lst: list[str], area: int, professional_role: list[int], find_description: bool):
+def main(arg_dic: dict):
     """
     Функция создает csv файл с вакансиями. Имя файла собирается из параметров запроса поиска.
-    :param find_description: bool (включение/выключение для поиска поля описания, задается в set_find_word.py)
-    :param professional_role: list (список ролей, задается в set_find_word.py)
-    :param words_find_lst: list (слова для поиска, задаются в set_find_word.py)
-    :param area: int (регион, задается в set_find_word.py)
+    :param arg_dic: dict (Аргументы параметров запроса поиска, задаются в settings.json)
     """
-    links_vacancy_lst = list()  # Общий список ссылок на вакансии
-    for word in words_find_lst:  # Перебор поисковых слов
-        links_vacancy_lst += flv.get_links(word, area, professional_role, find_description)  # Добавление списка
-    print(f'Всего найдено вакансий {len(links_vacancy_lst)} по словам: {words_find_lst}')
-    links_vacancy_lst = list(set(links_vacancy_lst))  # Оставляем только уникальные значения
-    print(f'Всего найдено вакансий после очистки от дубликатов {len(links_vacancy_lst)} по словам: {words_find_lst}')
+    links_vacancy_lst = flv.run(arg_dic)  # Список ссылок на вакансии
 
     # Задание колонок
-    columns = ['link', 'id', 'name', 'company', 'salary', 'experience', 'schedule', 'schedule_dop', 'key',
+    columns = ['link', 'id', 'date', 'name', 'company', 'salary', 'experience', 'schedule', 'schedule_dop', 'key',
                'description']
     df = pd.DataFrame(columns=columns)  # DF с вакансиями
     cnt = 0  # Счетчик перебранных вакансий
@@ -105,16 +104,29 @@ def main(words_find_lst: list[str], area: int, professional_role: list[int], fin
 
     # print(df.to_string(max_rows=7, max_cols=10))
     # Сборка имени файла
-    file_name = f'{area}'
-    for word in words_find_lst:
+    file_name = ''
+    for a in arg_dic["area"]:
+        file_name += f'{a}_'
+    for word in arg_dic["text"]:
         file_name += f'_{word}'
-    if len(professional_role) != 0:
-        for i in professional_role:
+    if len(arg_dic["professional_role"]) != 0:
+        for i in arg_dic["professional_role"]:
             file_name += f'_{i}'
-    if find_description:
-        file_name += f'_description'
+    for word in arg_dic["search_field"]:
+        file_name += f'_{word}'
+
     df.to_csv(f'{file_name}.csv', sep=';')  # index=False,
+    print(f'Файл сохранен: {file_name}.csv')
 
 
 if __name__ == "__main__":
-    main(setting.words_find_lst, setting.area, setting.professional_role, setting.find_description)
+    # main(setting.words_find_lst, setting.area, setting.professional_role, setting.find_description)
+
+    file_path = r'settings.json'  # Указываем путь к JSON файлу настроек
+
+    # Открываем файл и загружаем его содержимое в словарь
+    with open(file_path, 'r', encoding='utf-8') as file:
+        data = json.load(file)
+    # print(data)  # Выводим содержимое словаря
+
+    main(data)
