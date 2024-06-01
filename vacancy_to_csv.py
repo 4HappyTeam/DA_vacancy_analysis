@@ -14,7 +14,7 @@ def get_vacancy(link: str) -> dict:
     :param link: str
     :return: vacancy_dic: dict
     """
-    vacancy_dic = {'link': link, 'id': int(link.split('/')[-1])}
+    vacancy_dic = {'id': int(link.split('/')[-1])}
     ua = fake_useragent.UserAgent()
     data = requests.get(
         url=link,
@@ -96,7 +96,7 @@ def main(arg_dic: dict):
     links_vacancy_lst = flv.run(arg_dic)  # Список ссылок на вакансии
 
     # Задание колонок
-    columns = ['link', 'id', 'date', 'name', 'company', 'salary', 'experience', 'schedule', 'schedule_dop', 'key',
+    columns = ['id', 'date', 'name', 'company', 'salary', 'experience', 'schedule', 'schedule_dop', 'key',
                'description']
     df = pd.DataFrame(columns=columns)  # DF с вакансиями
     cnt = 0  # Счетчик перебранных вакансий
@@ -127,7 +127,7 @@ def main(arg_dic: dict):
     for word in arg_dic["search_field"]:
         file_name += f'_{word}'
 
-    df.to_csv(f'{file_name}.csv', sep=';')  # index=False,
+    df.to_csv(f'{file_name}.csv', sep=';', index=False)
     print(f'Файл сохранен: {file_name}.csv')
 
 
