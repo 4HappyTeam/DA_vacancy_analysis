@@ -1,0 +1,13 @@
+{
+    "text": ["Аналитик"],
+    "search_field": ["description"],
+    "excluded_text": ["Бизнес-аналитик", "Системный аналитик"],
+    "professional_role": [10, 156, 164, 163],
+    "area": [1],
+    "salary": "",
+    "experience": ["between1And3"],
+    "order_by": "relevance",
+    "search_period": 0,
+    "items_on_page": 20,
+    "hhtmFrom": "vacancy_search_filter"
+}
