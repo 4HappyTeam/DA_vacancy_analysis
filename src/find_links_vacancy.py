@@ -18,9 +18,10 @@ def get_links(arg_dic: dict) -> list:
     url_str = f'https://hh.ru/search/vacancy?L_save_area=true&'
     query_arg = urllib.parse.urlencode(arg_dic, doseq=True)
     url_str += query_arg
+    # print(url_str)
+    # return
 
     # Получение количества страниц
-    # url_str = f'{url_str}&page=1'
     print(f'Получение количества страниц по запросу <{arg_dic["text"]}> по ссылке:\n'
           f'{url_str}')
     response = requests.get(url=url_str, headers={"user-agent": ua.random})
@@ -105,7 +106,11 @@ def run(settings_args: dict) -> list:
 
 
 if __name__ == "__main__":
-    file_path = r'../settings.json'  # Указываем путь к JSON файлу настроек
+    # file_path = r'../settings.json'  # Указываем путь к JSON файлу настроек
+    # file_path = r'../s_1.json'  # Указываем путь к JSON файлу настроек
+    # file_path = r'../s_2.json'  # Указываем путь к JSON файлу настроек
+    # file_path = r'../s_3.json'  # Указываем путь к JSON файлу настроек
+    file_path = r'../s_4.json'  # Указываем путь к JSON файлу настроек
 
     # Открываем файл и загружаем его содержимое в словарь
     with open(file_path, 'r', encoding='utf-8') as file:

@@ -4,6 +4,7 @@ import fake_useragent
 from bs4 import BeautifulSoup
 import pandas as pd
 import json
+import glob
 
 from src import find_links_vacancy as flv
 
@@ -14,7 +15,7 @@ def get_vacancy(link: str) -> dict:
     :param link: str
     :return: vacancy_dic: dict
     """
-    vacancy_dic = {'link': link, 'id': int(link.split('/')[-1])}
+    vacancy_dic = {'id': int(link.split('/')[-1])}
     ua = fake_useragent.UserAgent()
     data = requests.get(
         url=link,
@@ -81,7 +82,7 @@ def get_vacancy(link: str) -> dict:
     try:
         vacancy_dic['description'] = soup.find(
             'div', attrs={"data-qa": "vacancy-description"}
-        ).text.replace('\n', '').strip()
+        ).text.strip().replace('\n', '')
     except:
         vacancy_dic['description'] = ""
 
@@ -96,7 +97,7 @@ def main(arg_dic: dict):
     links_vacancy_lst = flv.run(arg_dic)  # Список ссылок на вакансии
 
     # Задание колонок
-    columns = ['link', 'id', 'date', 'name', 'company', 'salary', 'experience', 'schedule', 'schedule_dop', 'key',
+    columns = ['id', 'date', 'name', 'company', 'salary', 'experience', 'schedule', 'schedule_dop', 'key',
                'description']
     df = pd.DataFrame(columns=columns)  # DF с вакансиями
     cnt = 0  # Счетчик перебранных вакансий
@@ -126,19 +127,20 @@ def main(arg_dic: dict):
             file_name += f'_{i}'
     for word in arg_dic["search_field"]:
         file_name += f'_{word}'
+    for word in arg_dic["experience"]:
+        file_name += f'_{word}'
 
-    df.to_csv(f'{file_name}.csv', sep=';')  # index=False,
+    df.to_csv(f'{file_name}.csv', sep=';', index=False)
     print(f'Файл сохранен: {file_name}.csv')
 
 
 if __name__ == "__main__":
 
-    # file_path = r'settings_Аналитик_msk.json'  # Указываем путь к JSON файлу настроек
-    file_path = r'settings.json'  # Указываем путь к JSON файлу настроек
+    files_set_lst = glob.glob('*.json')
+    print(files_set_lst)
 
-    # Открываем файл и загружаем его содержимое в словарь
-    with open(file_path, 'r', encoding='utf-8') as file:
-        data = json.load(file)
-    # print(data)  # Выводим содержимое словаря
-
-    main(data)
+    for f in files_set_lst:
+        # Открываем файл и загружаем его содержимое в словарь
+        with open(f, 'r', encoding='utf-8') as file:
+            data = json.load(file)
+        main(data)
